@@ -1,0 +1,705 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <string>
+#include <vector>
+#include <windows.h>
+#include <conio.h>
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#define db_size 8
+using namespace std;
+bool is_filled = false;
+int note_counter = 0;
+struct NOTE
+{
+	char surname[20] = { 0 };
+	char name[20] = { 0 };
+	long long number =  0 ;
+	int data[3] = { 0,0,0 };
+}DB[db_size];
+void add_note();
+void show_db();
+void sort();
+void search();
+void save();
+void load();
+int main()
+{
+	bool run = true;
+	string title = "\x1b[33mDATABASE\x1b[0m";
+	int max_option_name_size = 0;
+	int counter = 1, chosen_option=counter;
+	vector <string> options;
+	options.push_back("Add note");
+	options.push_back("Show DATABASE");
+	options.push_back("Sort DATABASE");
+	options.push_back("Search by last name");
+	options.push_back("Save DATABASE");
+	options.push_back("Load DATABASE");
+	options.push_back("Exit");
+
+	for (int i = 0; i < options.size(); i++)
+	{
+		if (options[i].length() > max_option_name_size)
+		{
+			max_option_name_size = options[i].length();
+		}
+	}
+	max_option_name_size += 4;
+	while (run)
+	{
+		system("cls");
+		cout << (char)201;
+		for (int i = 1; i < max_option_name_size - 1; i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)187 << endl;
+		// верхняя часть таблицы
+		cout << (char)186 << title;
+		int str1 = max_option_name_size - title.length() / 2; // печатает DATABASE
+		for (int i = 0; i < str1 - 2; i++)
+		{
+			cout << ' ';
+		}
+		cout << (char)186 << endl;
+		//разделитель заголовка и текста
+
+		cout << (char)186;
+		for (int j = 0; j < max_option_name_size - 2; j++)
+		{
+
+			cout << (char)196;
+
+		}
+		cout << (char)186;
+		cout << endl;
+
+
+		for (int i = 0; i < options.size(); i++)
+		{
+			int str2;
+			if (counter == i + 1)
+			{
+				cout << (char)186 << "\x1b[33m" << '>' << options[i] << '<' << "\x1b[0m";             //ПЕЧАТАЕТ ТЕКСТ!!!!!	
+				str2 = max_option_name_size - options[i].length() - 2;
+
+			}
+			else
+			{
+				cout << (char)186 << options[i];             //ПЕЧАТАЕТ ТЕКСТ!!!!!	
+				str2 = max_option_name_size - options[i].length();
+			}
+
+
+
+			for (int j = 0; j < str2 - 2; j++)
+			{
+				cout << ' ';
+			}
+			cout << (char)186 << endl;
+
+
+			if (i == options.size() - 1)
+			{
+				cout << (char)200;
+				for (int k = 0; k < max_option_name_size - 2; k++) // если последний элемент , то печатается нижняя часть таблицы
+				{
+					cout << (char)205;
+				}
+				cout << (char)188;
+			}
+			else
+			{
+				cout << (char)186;
+				for (int j = 0; j < max_option_name_size - 2; j++) // иначе печатается разделитель между словами
+				{
+
+					cout << (char)196;
+				}
+				cout << (char)186;
+				cout << endl;
+			}
+
+		}
+		char pressed = _getch();
+		if (((pressed == 'w') or (pressed == 'W')) && (counter != 1))
+		{
+			counter--;
+		}
+		if (((pressed == 's') or (pressed == 'S')) && (counter != 7))
+		{
+			counter++;
+		}
+		if (pressed == '\r' || pressed == '\n')
+		{
+			chosen_option = counter;
+			system("cls");
+			switch (chosen_option)
+			{
+			case 1:
+				add_note();
+				break;
+			case 2:
+				show_db();
+				break;
+			case 3:
+				sort();
+				break;
+			case 4:
+				search();
+				break;
+			case 5:
+				save();
+				break;
+			case 6:
+				load();
+				break;
+			case 7:
+				run = false;
+				break;
+
+			}
+			
+		}
+				
+
+	}
+	// главная часть таблицы
+}
+void add_note()
+{
+	string title = "\x1b[33mENTER YOUR DATA\x1b[0m";
+	if (note_counter < db_size) // сам текст
+	{
+		if (note_counter == 0)
+		{
+			is_filled = true;
+		}
+		cout << (char)201;
+		for (int i = 1; i < 50; i++)
+		{
+			cout << (char)205;			
+		}
+		cout << (char)187 << endl;
+		cout << (char)186 << title;
+		for (int i = 0; i < 50 - title.length() / 2 - 4; i++) // формирование рамки 
+		{
+			cout << " ";
+		}
+		cout << (char)186 << endl;
+
+
+		cout << (char)200;
+		for (int i = 1; i < 50; i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)188;
+		cout << endl;
+		string space(34, ' ');
+
+		cout << "Enter surname: ";
+		cin >> DB[note_counter].surname;
+		cout << "Enter name: ";
+		cin >> DB[note_counter].name;
+		cout << "Enter phone number [8XXXXXXXXXX]: "; // заполнение данных
+		cin >> DB[note_counter].number;
+		cout << "Enter date of birth [DD.MM.YYYY]: ";
+		cin >> DB[note_counter].data[0];
+		cout << space;
+		cin >> DB[note_counter].data[1];
+		cout << space;
+		cin >> DB[note_counter].data[2];
+		Sleep(250);
+		cout << "\x1b[33mSuccess!\x1b[0m";
+		Sleep(500);
+
+		note_counter++;
+	}
+	else
+	{
+		string title= "DataBase overflow";
+		system("cls");
+		cout << (char)201;
+		for (int i = 1; i < 50; i++)
+		{
+			cout << (char)205;   // в ином случае выведится ошибка 
+		}
+		cout << (char)187 << endl;
+		cout << (char)186 << title;
+		for (int i = 0; i < 50 - title.length() / 2 - 4; i++)
+		{
+			cout << " ";
+		}
+		cout << (char)186 << endl;
+
+
+		cout << (char)200;
+		for (int i = 1; i < 50; i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)188;
+		cout << endl;
+
+	}
+}
+void show_db()
+{
+	if (is_filled)
+	{
+		system("cls");
+		string ID_txt = "ID", sur_txt = "      Surname      ", name_txt = "        Name        ", num_txt = "       Phone       ", dat_txt = "   Data of Birth   ";
+		cout << (char)201;
+		for (int i = 0; i < ID_txt.length(); i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)203;
+		for (int i = 0; i < sur_txt.length(); i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)203;
+		for (int i = 0; i < name_txt.length(); i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)203;
+		for (int i = 0; i < num_txt.length(); i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)203;
+		for (int i = 0; i < dat_txt.length(); i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)187 << endl;
+
+		cout << (char)186 << "\x1b[33m" << ID_txt << "\x1b[0m";
+		cout << (char)186 << "\x1b[33m" << sur_txt << "\x1b[0m";
+		cout << (char)186 << "\x1b[33m" << name_txt << "\x1b[0m";
+		cout << (char)186 << "\x1b[33m" << num_txt << "\x1b[0m";
+		cout << (char)186 << "\x1b[33m" << dat_txt << "\x1b[0m";
+		cout << (char)186 << endl;
+
+
+		cout << (char)204;
+		for (int i = 0; i < ID_txt.length(); i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)206;
+		for (int i = 0; i < sur_txt.length(); i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)206;
+		for (int i = 0; i < name_txt.length(); i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)206;
+		for (int i = 0; i < num_txt.length(); i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)206;
+		for (int i = 0; i < dat_txt.length(); i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)185 << endl;
+
+		
+
+		for (int i = 0; i < note_counter; i++)
+		{
+			string tmp = to_string(i);
+
+
+			string tmp1 = to_string(DB[i].data[0]);
+			string tmp2 = to_string(DB[i].data[1]);
+			string tmp3 = to_string(DB[i].data[2]);
+
+
+			string str1((ID_txt.length() - tmp.length()), ' ');
+			cout << (char)186 << i << str1;
+			string str2((sur_txt.length() - strlen(DB[i].surname)), ' ');
+			cout << (char)186 << DB[i].surname << str2;
+			string str3((name_txt.length() - strlen(DB[i].name)), ' ');
+			cout << (char)186 << DB[i].name << str3;
+			string str4((num_txt.length() - 11), ' ');
+			cout << (char)186 << '8' << DB[i].number << str4;
+			string str5((dat_txt.length() - tmp1.length() - tmp2.length() - tmp3.length() - 2), ' ');
+			cout << (char)186 << DB[i].data[0] << '.' << DB[i].data[1] << '.' << DB[i].data[2] << str5;
+			cout << (char)186 << endl;
+		}
+		cout << (char)200;
+		for (int i = 0; i < ID_txt.length(); i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)202;
+		for (int i = 0; i < sur_txt.length(); i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)202;
+		for (int i = 0; i < name_txt.length(); i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)202;
+		for (int i = 0; i < num_txt.length(); i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)202;
+		for (int i = 0; i < dat_txt.length(); i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)188 << endl;
+
+		cout << "Press any key to go back...";
+		_getch();
+	}
+	else
+	{
+		string title = "Empty DataBase";
+
+		system("cls");
+
+		//верхняя граница
+		cout << (char)201;
+		for (int i = 1; i < title.length() + 1; i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)187 << endl;
+
+		//заголовок
+		cout << (char)186 << "\x1b[31m" << title << "\x1b[0m";
+		cout << (char)186 << endl;
+
+		//нижняя граница
+		cout << (char)200;
+		for (int i = 1; i < title.length() + 1; i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)188 << endl;
+
+		Sleep(2000);
+	}
+}
+void sort()
+{
+	int mass[100];
+	if (is_filled)
+	{
+		for (int i = 0; i < note_counter; i++)
+		{
+				mass[i] = DB[i].number / 10000000;
+		}
+		for (int i = 0; i < note_counter-1; i++)
+		{
+			for (int j = i + 1; j < note_counter; j++)
+			{
+				if (mass[i] < mass[j])
+				{
+					NOTE tmp = DB[i];
+					DB[i] = DB[j];
+					DB[j] = tmp;
+				}
+			}
+		}
+	}
+	else
+	{
+		string title = "Empty DataBase";
+
+		system("cls");
+
+		//верхняя граница
+		cout << (char)201;
+		for (int i = 1; i < title.length() + 1; i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)187 << endl;
+
+		//заголовок
+		cout << (char)186 << "\x1b[31m" << title << "\x1b[0m";
+		cout << (char)186 << endl;
+
+		//нижняя граница
+		cout << (char)200;
+		for (int i = 1; i < title.length() + 1; i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)188 << endl;
+
+		Sleep(2000);
+	}
+	
+}
+void search()
+{
+	int field_len = 30;
+	string title = "\x1b[33mSearch:\x1b[0m";
+	char field[20] = { 0 };
+	system("cls");
+	//верхняя граница
+	cout << (char)201;
+	for (int i = 1; i < field_len; i++)
+	{
+		cout << (char)205;
+	}
+	cout << (char)187 << endl;
+	//заголовок
+	cout << (char)186 << title;
+	for (int i = 0; i < field_len - title.length() / 2; i++)
+	{
+		cout << " ";
+	}
+	cout << (char)186 << endl;
+	//нижняя граница
+	cout << (char)200;
+	for (int i = 1; i < field_len; i++)
+	{
+		cout << (char)205;
+	}
+	cout << (char)188 << endl;
+
+	cout << "Enter surname: ";
+
+	char sch[20] = { 0 };
+	cin >> sch;
+	int res_id[db_size] = { 0 }, k = 0;
+	int ch = 0;
+	bool nal = false;
+	for (int i = 0; i < note_counter; i++)
+	{
+		if (!strcmp(sch,DB[i].surname))
+		{
+			res_id[k] = i;
+			k++;
+			ch++;
+		}
+	}
+	if (ch > 0)
+	{
+		nal = true;
+	}
+	if (nal)
+	{
+		system("cls");
+		string title2 = "\x1b[33mResult:\x1b[0m";
+		//верхняя граница
+		cout << (char)201;
+		for (int i = 1; i < field_len; i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)187 << endl;
+		//заголовок
+		cout << (char)186 << title;
+		for (int i = 0; i < field_len - title.length() / 2; i++)
+		{
+			cout << " ";
+		}
+		cout << (char)186 << endl;
+		//нижняя граница
+		cout << (char)200;
+		for (int i = 1; i < field_len; i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)188 << endl;
+
+		string ID_txt = "ID ", sur_txt = "       Surname      ", name_txt = "        Name        ", num_txt = "        Phone       ", dob_txt = "    Date of birth   ";
+
+		cout << (char)201;
+		for (int i = 0; i < ID_txt.length(); i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)203;
+		for (int i = 0; i < sur_txt.length(); i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)203;
+		for (int i = 0; i < name_txt.length(); i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)203;
+		for (int i = 0; i < num_txt.length(); i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)203;
+		for (int i = 0; i < dob_txt.length(); i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)187 << endl;
+
+		cout << (char)186 << "\x1b[43m" << ID_txt << "\x1b[0m";
+		cout << (char)186 << "\x1b[43m" << sur_txt << "\x1b[0m";
+		cout << (char)186 << "\x1b[43m" << name_txt << "\x1b[0m";
+		cout << (char)186 << "\x1b[43m" << num_txt << "\x1b[0m";
+		cout << (char)186 << "\x1b[43m" << dob_txt << "\x1b[0m";
+		cout << (char)186 << endl;
+
+		cout << (char)204;
+		for (int i = 0; i < ID_txt.length(); i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)206;
+		for (int i = 0; i < sur_txt.length(); i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)206;
+		for (int i = 0; i < name_txt.length(); i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)206;
+		for (int i = 0; i < num_txt.length(); i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)206;
+		for (int i = 0; i < dob_txt.length(); i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)185 << endl;
+
+		for (int i = 0; i < ch; i++)
+		{
+			string tmp = to_string(res_id[i]);
+
+
+			string tmp1 = to_string(DB[res_id[i]].data[0]);
+			string tmp2 = to_string(DB[res_id[i]].data[1]);
+			string tmp3 = to_string(DB[res_id[i]].data[2]);
+
+
+			string str1((ID_txt.length() - tmp.length()), ' ');
+			cout << (char)186 << res_id[i] << str1;
+			string str2((sur_txt.length() - strlen(DB[res_id[i]].surname)), ' ');
+			cout << (char)186 << DB[res_id[i]].surname << str2;
+			string str3((name_txt.length() - strlen(DB[res_id[i]].name)), ' ');
+			cout << (char)186 << DB[res_id[i]].name << str3;
+			string str4((num_txt.length() - 11), ' ');
+			cout << (char)186<< 8 << DB[res_id[i]].number << str4;
+			string str5((dob_txt.length() - tmp1.length() - tmp2.length() - tmp3.length() - 2), ' ');
+			cout << (char)186 << DB[res_id[i]].data[0] << '.' << DB[i].data[1] << '.' << DB[i].data[2] << str5;
+			cout << (char)186 << endl;
+		}
+
+		cout << (char)200;
+		for (int i = 0; i < ID_txt.length(); i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)202;
+		for (int i = 0; i < sur_txt.length(); i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)202;
+		for (int i = 0; i < name_txt.length(); i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)202;
+		for (int i = 0; i < num_txt.length(); i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)202;
+		for (int i = 0; i < dob_txt.length(); i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)188 << endl;
+
+		cout << "Press any key to go back...";
+		_getch();
+	}
+	else
+	{
+		string title = "\x1b[31mNot found\x1b[0m";
+		char field[20] = { 0 };
+
+		system("cls");
+		//верхняя граница
+		cout << (char)201;
+		for (int i = 1; i < field_len; i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)187 << endl;
+		//заголовок
+		cout << (char)186 << title;
+		for (int i = 0; i < field_len - 10; i++)
+		{
+			cout << " ";
+		}
+		cout << (char)186 << endl;
+		//нижняя граница
+		cout << (char)200;
+		for (int i = 1; i < field_len; i++)
+		{
+			cout << (char)205;
+		}
+		cout << (char)188 << endl;
+
+		cout << "Press any key to go back...";
+		_getch();
+	}
+}
+void save()
+{
+	
+	FILE* S;
+	S = fopen("save.txt", "w");
+	fprintf(S, "%d\n", note_counter);
+	for (int i = 0; i < note_counter; i++)
+	{
+		fprintf(S, "%s\t", DB[i].surname);
+		fprintf(S, "%s\t", DB[i].name);
+		fprintf(S, "%lld\t", DB[i].number);
+		fprintf(S, "%d %d %d\n", DB[i].data[0], DB[i].data[1], DB[i].data[2]);
+	}
+	fclose(S);
+	
+}
+void load()
+{
+		
+	S = fopen("save.txt", "r");
+	fscanf(S, "%d", &note_counter);
+	if (note_counter > 0)
+	{
+		is_filled = true;
+	}
+	for (int i = 0; i < note_counter; i++)
+	{
+		fscanf(S,"%s%s%lld%d%d%d", DB[i].surname, DB[i].name, &DB[i].number, &DB[i].data[0], &DB[i].data[1], &DB[i].data[2]);
+	}
+	fclose(S);
+}
+
+
